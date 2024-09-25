@@ -1,6 +1,11 @@
-package com.company.project.service;/**
- * @description:  
+package com.company.project.service;
+
+import org.springframework.stereotype.Service;
+
+/**
+ * @description:
  * @author: ManolinCoder
- * @time: 2024/9/25 
- */   public interface IUserSerivce {
+ * @time: 2024/9/25
+ */
+public interface IUserService {
 }
