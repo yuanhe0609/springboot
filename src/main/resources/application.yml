@@ -1,12 +1,12 @@
 server:
-  port: 8080
+  port: 1983
 spring:
   profiles:
     active: default
   application:
     name: springboot
   datasource:
-    url: jdbc:mysql://localhost:3306/springboot?characterEncoding=utf8
+    url: jdbc:mysql://localhost:3306/my_interface_platform?characterEncoding=utf8
     driver-class-name: com.mysql.cj.jdbc.Driver
     username: root
     password: 123456

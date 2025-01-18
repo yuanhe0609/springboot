@@ -6,13 +6,13 @@
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
         <version>3.3.4</version>
-        <relativePath/> <!-- lookup parent from repository -->
+        <relativePath/>
     </parent>
     <groupId>org.example</groupId>
-    <artifactId>springboot</artifactId>
+    <artifactId>my-interface-platform</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>springboot</name>
-    <description>springboot</description>
+    <name>my-interface-platform</name>
+    <description>my-interface-platform</description>
     <url/>
     <licenses>
         <license/>
@@ -78,6 +78,27 @@
             <groupId>com.alibaba.fastjson2</groupId>
             <artifactId>fastjson2</artifactId>
             <version>2.0.43</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.dubbo</groupId>
+            <artifactId>dubbo-spring-boot-starter</artifactId>
+            <version>2.7.4.1</version>
+        </dependency>
+
+        <dependency>
+            <groupId>commons-httpclient</groupId>
+            <artifactId>commons-httpclient</artifactId>
+            <version>3.1</version>
+        </dependency>
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>javax.servlet-api</artifactId>
+            <version>3.1.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
+            <version>4.5</version>
         </dependency>
     </dependencies>
 

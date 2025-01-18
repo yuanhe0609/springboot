@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.company.project.mapper.InterfaceHeaderMapper">
+    <resultMap id="InterfaceHeaderResultMap"  type="com.company.project.entity.InterfaceHeaderEntity">
+        <result column="id" property="id" />
+        <result column="creator_name" property="interfaceCreator" />
+        <result column="create_time" property="interfaceCreateTime"/>
+        <result column="updater_name" property="interfaceUpdater"/>
+        <result column="update_time" property="interfaceUpdateTime"/>
+        <result column="default_value" property="defaultValue"/>
+    </resultMap>
+  <insert id="insertNotEx" useGeneratedKeys="true" keyProperty="id">
+      insert into t_interface_header (interface_code,param,default_value,creator_name,create_time,updater_name,update_time)
+            select #{interfaceCode},#{param},#{defaultValue},#{interfaceCreator},#{interfaceCreateTime},#{interfaceUpdater},#{interfaceUpdateTime}
+                from DUAL where not exists(select interface_code from t_interface_header where interface_code = #{interfaceCode} and param = #{param})
+  </insert>
+</mapper>
