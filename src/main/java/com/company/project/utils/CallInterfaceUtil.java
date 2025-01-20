@@ -12,19 +12,23 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Set;
-import java.util.logging.FileHandler;
 import java.util.logging.Logger;
-import java.util.logging.SimpleFormatter;
 import java.util.stream.Collectors;
 
 public class CallInterfaceUtil {
-    public Map PostAction(InterfaceEntity interfaceEntity, JSONObject header, JSONObject body, Logger logger){
+    /**
+     * @description POST调用接口
+     * @param interfaceEntity 接口实体
+     * @param header 请求头
+     * @param body 请求正文
+     * @param logger 日志
+     * @return 返回接口返回值
+     * */
+    public JSONObject PostAction(InterfaceEntity interfaceEntity, JSONObject header, JSONObject body, Logger logger){
         HttpClient httpClient = new HttpClient();
         httpClient.getHttpConnectionManager().getParams().setConnectionTimeout(5000);
-        Map result = new HashMap();
+        JSONObject result = new JSONObject();
         PostMethod postMethod = new PostMethod(interfaceEntity.getInterfaceProtocol()+"://"+interfaceEntity.getInterfaceHost()+":"+interfaceEntity.getInterfacePort()+interfaceEntity.getInterfaceAddress());
         if(header!=null){
             Set headerKeys = header.keySet();
@@ -40,7 +44,8 @@ public class CallInterfaceUtil {
         try{
             postMethod.setRequestEntity(new StringRequestEntity(body.toString(), "application/json", "UTF-8"));
             httpClient.executeMethod(postMethod);
-            result.put("data",postMethod.getResponseBodyAsString());
+            JSONObject tmp = JSONObject.parseObject(postMethod.getResponseBodyAsString());
+            result.put("data",tmp);
             result.put("code","200");
             logger.info("["+new Date()+"]Call interface successful,response: "+postMethod.getResponseBodyAsString());
         }catch (Exception e){
@@ -54,10 +59,18 @@ public class CallInterfaceUtil {
         result.put("timeElapsed",timeElapsed);
         return result;
     }
-    public Map GetAction(InterfaceEntity interfaceEntity, JSONObject header, JSONObject body, Logger logger){
+    /**
+     * @description GET调用接口
+     * @param interfaceEntity 接口实体
+     * @param header 请求头
+     * @param body 请求正文
+     * @param logger 日志
+     * @return 返回接口返回值
+     * */
+    public JSONObject GetAction(InterfaceEntity interfaceEntity, JSONObject header, JSONObject body, Logger logger){
         HttpClient httpClient = new HttpClient();
         httpClient.getHttpConnectionManager().getParams().setConnectionTimeout(5000);
-        Map result = new HashMap();
+        JSONObject result = new JSONObject();
         GetMethod getMethod = new GetMethod(interfaceEntity.getInterfaceProtocol()+"://"+interfaceEntity.getInterfaceHost()+":"+interfaceEntity.getInterfacePort()+interfaceEntity.getInterfaceAddress());
         if(header!=null){
             Set headerKeys = header.keySet();
@@ -82,7 +95,8 @@ public class CallInterfaceUtil {
             httpClient.executeMethod(getMethod);
             String response = new BufferedReader(new InputStreamReader(getMethod.getResponseBodyAsStream()))
                     .lines().parallel().collect(Collectors.joining(System.lineSeparator()));
-            result.put("data",response);
+            JSONObject tmp = JSONObject.parseObject(response);
+            result.put("data",tmp);
             result.put("code","200");
             logger.info("["+new Date()+"]Call interface successful,response: "+response);
         } catch (IOException e) {

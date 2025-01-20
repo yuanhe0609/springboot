@@ -23,8 +23,15 @@ public class CallInterFaceServiceImpl implements CallInterfaceService {
     InterfaceMapper interfaceMapper;
     @Autowired
     CallInterfaceMapper callInterfaceMapper;
+    /**
+     * @description 调用外部接口
+     * @param interfaceCode 接口编码
+     * @param header 请求头
+     * @param body 请求正文
+     * @return 返回接口返回值
+     * */
     @Override
-    public Object CallInterface(String interfaceCode, JSONObject header, JSONObject body) {
+    public JSONObject CallInterface(String interfaceCode, JSONObject header, JSONObject body) {
         HttpClient httpClient = new HttpClient();
         httpClient.getHttpConnectionManager().getParams().setConnectionTimeout(5000);
         Logger logger = Logger.getLogger("CallInterfaceLog");
@@ -32,7 +39,7 @@ public class CallInterFaceServiceImpl implements CallInterfaceService {
         queryWrapper.eq("interface_code", interfaceCode);
 
         InterfaceEntity interfaceEntity = interfaceMapper.selectOne(queryWrapper);
-        Map result = new HashMap<>();
+        JSONObject result = new JSONObject();
         if("POST".equals(interfaceEntity.getInterfaceType())){
             CallInterfaceUtil callInterfaceUtil = new CallInterfaceUtil();
             result = callInterfaceUtil.PostAction(interfaceEntity,header,body,logger);
@@ -49,12 +56,10 @@ public class CallInterFaceServiceImpl implements CallInterfaceService {
         callInterfaceEntity.setInterfaceCode(interfaceEntity.getInterfaceCode());
         callInterfaceEntity.setHeader(header.toString());
         callInterfaceEntity.setData(body.toString());
-        callInterfaceEntity.setInvokeTime(new Date());
-        callInterfaceEntity.setConsumeTime((Long) result.get("timeElapsed"));
+        callInterfaceEntity.setConsumeTime(Float.parseFloat(result.get("timeElapsed").toString())/1000);
         callInterfaceEntity.setResult(result.toString());
         callInterfaceEntity.setMethod(interfaceEntity.getInterfaceType());
         callInterfaceEntity.setStatus(result.get("code").toString());
-        callInterfaceEntity.setInvokerName("管理员");
         callInterfaceMapper.insert(callInterfaceEntity);
     }
 }

@@ -25,33 +25,52 @@ public class InterfaceServiceImpl implements InterfaceService {
     private InterfaceHeaderMapper interfaceHeaderMapper;
     @Autowired
     private InterfaceBodyMapper interfaceBodyMapper;
-
+    /**
+     * @description 插入接口信息
+     * @param interfaceEntity 接口实体
+     * @return 返回插入接口数量
+     * */
     @Override
     public Integer addNewInterface(InterfaceEntity interfaceEntity) {
         Integer row = interfaceMapper.insert(interfaceEntity);
         return row;
     }
-
+    /**
+     * @description 查询接口列表
+     * @return 返回接口列表
+     * */
     @Override
     public List<InterfaceEntity> getAllInterfaceList() {
         List<InterfaceEntity> interfaceEntityList = interfaceMapper.selectList(null);
         return interfaceEntityList;
     }
-
+    /**
+     * @description 更新接口信息
+     * @param interfaceEntity 接口实体
+     * @return 返回更新接口数量
+     * */
     @Override
     public Integer updateInterface(InterfaceEntity interfaceEntity) {
         UpdateWrapper<InterfaceEntity> updateWrapper = new UpdateWrapper<>();
         updateWrapper.eq("interface_code", interfaceEntity.getInterfaceCode());
         return interfaceMapper.update(interfaceEntity, updateWrapper);
     }
-
+    /**
+     * @description 删除接口信息
+     * @param interfaceCode 接口编码
+     * @return 返回删除接口数量
+     * */
     @Override
     public Integer deleteInterface(String interfaceCode) {
         QueryWrapper queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("interface_code", interfaceCode);
         return interfaceMapper.delete(queryWrapper);
     }
-
+    /**
+     * @description 请求头转参数集合
+     * @param interfaceCode 接口编码
+     * @param header 请求头
+     * */
     @Override
     public void parseInterfaceHeaderToList(String interfaceCode,JSONObject header) {
         Set headerKeySet = header.keySet();
@@ -61,13 +80,17 @@ public class InterfaceServiceImpl implements InterfaceService {
             interfaceHeaderEntity.setParam(key.toString());
             interfaceHeaderEntity.setDefaultValue(null);
             interfaceHeaderEntity.setInterfaceCreator("管理员");
-            interfaceHeaderEntity.setInterfaceCreateTime(new Date());
             interfaceHeaderEntity.setInterfaceUpdater("管理员");
-            interfaceHeaderEntity.setInterfaceUpdateTime(new Date());
             interfaceHeaderMapper.insertNotEx(interfaceHeaderEntity);
         }
     }
-
+    /**
+     * @description 请求正文转参数集合
+     * @param interfaceCode 接口编码
+     * @param body 请求头
+     * @param parentsParam 外层参数名
+     * @param parentsType 外层参数类型
+     * */
     @Override
     public void parseInterfaceBodyToList(String interfaceCode, JSONObject body, String parentsParam,String parentsType) {
         Set bodyKeySet = body.keySet();
@@ -90,31 +113,34 @@ public class InterfaceServiceImpl implements InterfaceService {
 
             interfaceBodyEntity.setType(body.get(key).getClass().getSimpleName());
             if("".equals(parentsParam) || parentsParam == null){
-                interfaceBodyEntity.setParentsParam("null");
+                interfaceBodyEntity.setParentsParam("*");
             }else{
                 interfaceBodyEntity.setParentsParam(parentsParam);
             }
             interfaceBodyEntity.setParentsType(parentsType);
             interfaceBodyEntity.setInterfaceCreator("管理员");
-            interfaceBodyEntity.setInterfaceCreateTime(new Date());
             interfaceBodyEntity.setInterfaceUpdater("管理员");
-            interfaceBodyEntity.setInterfaceUpdateTime(new Date());
             System.out.println(interfaceBodyEntity);
             interfaceBodyMapper.insertNotEx(interfaceBodyEntity);
         }
     }
+    /**
+     * @description 参数集合转请求正文格式
+     * @param interfaceCode 接口编码
+     * @return 请求正文格式
+     * */
     @Override
     public JSONObject parseInterfaceBodyToJSONObject(String interfaceCode) {
-        JSONObject body = new JSONObject();
         QueryWrapper<InterfaceBodyEntity> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq(interfaceCode != null, "interface_code", interfaceCode).orderByAsc("parents_param");
+        queryWrapper.eq(interfaceCode != null, "interface_code", interfaceCode).orderByDesc("parents_param");
         List<InterfaceBodyEntity> interfaceBodyEntityList = interfaceBodyMapper.selectList(queryWrapper);
-        Map bodyMap = new HashMap();
         Map<String, List<InterfaceBodyEntity>> groupByParentsParam = interfaceBodyEntityList.stream().collect(Collectors.groupingBy(InterfaceBodyEntity::getParentsParam));
-        Set keySet = groupByParentsParam.keySet();
+        //TODO 目前最外层的上层参数用*存储，用Arrays.sort进行排序，必须先遍历最外层。
+        Object[] keySetArray=groupByParentsParam.keySet().toArray();
+        Arrays.sort(keySetArray);
         JSONObject jsonObject = new JSONObject();
-        for(Object key : keySet){
-            if("null".equals(key.toString())){
+        for(Object key : keySetArray){
+            if("*".equals(key.toString())){
                 for(InterfaceBodyEntity interfaceBodyEntity : groupByParentsParam.get(key.toString())){
                     if("JSONArray".equals(interfaceBodyEntity.getType())){
                         jsonObject.put(interfaceBodyEntity.getParam(),new JSONArray());
@@ -131,7 +157,11 @@ public class InterfaceServiceImpl implements InterfaceService {
                         tmp.put(interfaceBodyEntity.getParam(),"");
                         tmpArray.add(tmp);
                     }else{
-                        tmpObject.put(interfaceBodyEntity.getParam(),"");
+                        if("JSONArray".equals(interfaceBodyEntity.getType())){
+                            tmpObject.put(interfaceBodyEntity.getParam(),new JSONArray());
+                        }else{
+                            tmpObject.put(interfaceBodyEntity.getParam(),"");
+                        }
                         jsonObject.put(key.toString(),tmpObject);
                     }
                 }
@@ -141,7 +171,7 @@ public class InterfaceServiceImpl implements InterfaceService {
             }
         }
         System.out.println(jsonObject);
-        return body;
+        return jsonObject;
     }
 
 }
