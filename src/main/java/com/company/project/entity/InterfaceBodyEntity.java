@@ -13,6 +13,11 @@ public class InterfaceBodyEntity extends BaseEntity{
     @TableField("param")
     private String param;
     /**
+     * 参数描述
+     * */
+    @TableField("param_description")
+    private String paramDescription;
+    /**
      * 参数类型
      * */
     @TableField("type")

@@ -13,6 +13,11 @@ public class InterfaceHeaderEntity extends BaseEntity{
     @TableField("param")
     private String param;
     /**
+     * 参数描述
+     * */
+    @TableField("param_description")
+    private String paramDescription;
+    /**
      * 默认值
      * */
     @TableField("default_value")

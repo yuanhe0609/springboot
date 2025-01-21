@@ -16,14 +16,18 @@ public class CallInterfaceController {
     @Autowired
     private InterfaceService interfaceService;
 
-    @PostMapping("/{interfaceCode}")
-    public JSONObject callInterface(@RequestBody JSONObject headerAndBody, @PathVariable String interfaceCode) {
+    @PostMapping("with_header/{interfaceCode}")
+    public JSONObject callInterfaceWithHeader(@RequestBody JSONObject headerAndBody, @PathVariable String interfaceCode) {
         JSONObject header = headerAndBody.getJSONObject("header");
         JSONObject body = headerAndBody.getJSONObject("body");
         interfaceService.parseInterfaceHeaderToList(interfaceCode,header);
         interfaceService.parseInterfaceBodyToList(interfaceCode,body,null,null);
         interfaceService.parseInterfaceBodyToJSONObject(interfaceCode);
-
         return callInterfaceService.CallInterface(interfaceCode,header,body);
+    }
+    @PostMapping("/without_header/{interfaceCode}")
+    public JSONObject callInterfaceWithoutHeader(@RequestBody JSONObject body, @PathVariable String interfaceCode) {
+
+        return null;
     }
 }

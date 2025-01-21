@@ -11,8 +11,8 @@
         <result column="default_value" property="defaultValue"/>
     </resultMap>
   <insert id="insertNotEx" useGeneratedKeys="true" keyProperty="id">
-      insert into t_interface_header (interface_code,param,default_value,creator_name,create_time,updater_name,update_time)
-            select #{interfaceCode},#{param},#{defaultValue},#{interfaceCreator},#{interfaceCreateTime},#{interfaceUpdater},#{interfaceUpdateTime}
+      insert into t_interface_header (interface_code,param,param_description,default_value,creator_name,create_time,updater_name,update_time)
+            select #{interfaceCode},#{param},#{paramDescription},#{defaultValue},#{interfaceCreator},#{interfaceCreateTime},#{interfaceUpdater},#{interfaceUpdateTime}
                 from DUAL where not exists(select interface_code from t_interface_header where interface_code = #{interfaceCode} and param = #{param})
   </insert>
 </mapper>

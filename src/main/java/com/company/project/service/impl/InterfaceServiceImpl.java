@@ -170,7 +170,6 @@ public class InterfaceServiceImpl implements InterfaceService {
                 }
             }
         }
-        System.out.println(jsonObject);
         return jsonObject;
     }
 
